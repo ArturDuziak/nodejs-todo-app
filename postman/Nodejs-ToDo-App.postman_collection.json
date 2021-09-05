@@ -1,0 +1,297 @@
+{
+	"info": {
+		"_postman_id": "08763ae7-e52c-4839-b0c3-a3d7e0f752e1",
+		"name": "Nodejs-ToDo-App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /api/v1/boards",
+			"item": [
+				{
+					"name": "User can fetch all boards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test('Endpoints returns array of objects with proper values', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.boards).to.be.a('array')",
+									"    pm.expect(responseData.boards[0].name).to.be.a('string')",
+									"    pm.expect(responseData.boards[0].description).to.be.a('string')",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"        \"boards\": {",
+									"            \"type\": \"array\",",
+									"            \"properties\": {",
+									"                \"name\": { \"type\": \"string\" },",
+									"                \"description\": { \"type\": \"string\" }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test(\"It validated Json schema\", () => {",
+									"    pm.response.to.have.jsonSchema(schema);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET /api/v1/boards/:id",
+			"item": [
+				{
+					"name": "User can successfully fetch specific board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Endpoints returns array of objects with proper values', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.name).to.be.a('string')",
+									"    pm.expect(responseData.description).to.be.a('string')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/123",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Returns an error when no ID is provided",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test('Return error message that the board with the given ID cannot be found', function () {",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/invalid_id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"invalid_id"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET /api/v1/boards/:id/tasks",
+			"item": [
+				{
+					"name": "Returns tasks of specific board",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/123/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"123",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "POST - /api/v1/boards",
+			"item": [
+				{
+					"name": "User can successfully create a board",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PUT - /api/v1/boards/:id",
+			"item": [
+				{
+					"name": "User can successfully update a board",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/123",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"123"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DELETE - /api/v1/boards/:id",
+			"item": [
+				{
+					"name": "User can successfully delete a board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Success message is returned\", function () {",
+									"    const responseData = pm.response.json();",
+									"    pm.expect(responseData.msg).to.eql(\"Board deleted successfully\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/123",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"123"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Response time always is less than 300ms\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(300);",
+					"});"
+				]
+			}
+		}
+	]
+}
