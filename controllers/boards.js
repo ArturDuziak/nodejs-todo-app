@@ -1,24 +1,20 @@
-const getAllBoards = (req, res) => {
-  res.status(200).json({
-    boards: [
-      { _id: 123, name: "Example of board name", description: "Description of example board" },
-      {
-        _id: 1234,
-        name: "Example of second board name",
-        description: "Description of second example board",
-      },
-    ],
-  });
-};
+const Boards = require("../models/boards");
+const asyncWrapper = require("../middleware/asyncWrapper");
 
-const getSpecificBoard = (req, res) => {
-  const { id: boardID } = req.params;
+const getAllBoards = asyncWrapper(async (req, res) => {
+  const boards = await Boards.find({});
+
   res.status(200).json({
-    _id: boardID,
-    name: "Example of board name",
-    description: "Description of example board",
+    boards,
   });
-};
+});
+
+const getSpecificBoard = asyncWrapper(async (req, res) => {
+  const { id: boardID } = req.params;
+  const board = await Boards.findById(boardID);
+
+  res.status(200).json(board);
+});
 
 const createBoard = (req, res) => {
   res.status(201).json({
