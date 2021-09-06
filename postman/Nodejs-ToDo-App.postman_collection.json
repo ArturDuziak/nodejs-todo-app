@@ -19,10 +19,6 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
-									"});",
-									"",
 									"pm.test('Endpoints returns array of objects with proper values', function () {",
 									"    const responseData = pm.response.json();",
 									"",
@@ -100,7 +96,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/v1/boards/123",
+							"raw": "{{url}}/api/v1/boards/6135c67b39777d4c25258935",
 							"host": [
 								"{{url}}"
 							],
@@ -108,7 +104,7 @@
 								"api",
 								"v1",
 								"boards",
-								"123"
+								"6135c67b39777d4c25258935"
 							]
 						}
 					},
@@ -126,7 +122,8 @@
 									"});",
 									"",
 									"pm.test('Return error message that the board with the given ID cannot be found', function () {",
-									"",
+									"    const responseData = pm.response.json();",
+									"    pm.expect(responseData.msg).to.eq(\"Cannot find board with id: 6555567b39777d4c25258932\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -137,7 +134,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/v1/boards/invalid_id",
+							"raw": "{{url}}/api/v1/boards/6555567b39777d4c25258932",
 							"host": [
 								"{{url}}"
 							],
@@ -145,7 +142,7 @@
 								"api",
 								"v1",
 								"boards",
-								"invalid_id"
+								"6555567b39777d4c25258932"
 							]
 						}
 					},

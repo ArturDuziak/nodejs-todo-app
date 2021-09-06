@@ -1,4 +1,5 @@
 const Boards = require("../models/boards");
+const { createCustomError } = require("../errors/custom-error");
 const asyncWrapper = require("../middleware/asyncWrapper");
 
 const getAllBoards = asyncWrapper(async (req, res) => {
@@ -9,9 +10,13 @@ const getAllBoards = asyncWrapper(async (req, res) => {
   });
 });
 
-const getSpecificBoard = asyncWrapper(async (req, res) => {
+const getSpecificBoard = asyncWrapper(async (req, res, next) => {
   const { id: boardID } = req.params;
   const board = await Boards.findById(boardID);
+
+  if (!board) {
+    return next(createCustomError(`Cannot find board with id: ${boardID}`, 404));
+  }
 
   res.status(200).json(board);
 });
