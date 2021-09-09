@@ -21,21 +21,19 @@ const getSpecificBoard = asyncWrapper(async (req, res, next) => {
   res.status(200).json(board);
 });
 
-const createBoard = (req, res) => {
-  res.status(201).json({
-    _id: 123,
-    name: "Newly created board",
-    description: "Description newly created board",
-  });
-};
+const createBoard = asyncWrapper(async (req, res) => {
+  const board = await Boards.create(req.body);
 
-const deleteBoard = (req, res) => {
+  res.status(201).json({ board });
+});
+
+const deleteBoard = asyncWrapper(async (req, res) => {
   const { id: boardID } = req.params;
 
   res.status(200).json({ msg: "Board deleted successfully" });
-};
+});
 
-const updateBoard = (req, res) => {
+const updateBoard = asyncWrapper(async (req, res) => {
   const { id: boardID } = req.params;
 
   res.status(200).json({
@@ -43,9 +41,9 @@ const updateBoard = (req, res) => {
     name: "Updated board",
     description: "Description updated board",
   });
-};
+});
 
-const getBoardTasks = (req, res) => {
+const getBoardTasks = asyncWrapper(async (req, res) => {
   const { id: boardID } = req.params;
 
   res.status(200).json({
@@ -58,7 +56,7 @@ const getBoardTasks = (req, res) => {
       },
     ],
   });
-};
+});
 
 module.exports = {
   getAllBoards,

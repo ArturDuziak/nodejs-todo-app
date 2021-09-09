@@ -7,7 +7,7 @@ const errorHandler = (err, req, res, next) => {
     return res.status(err.statusCode).json({ msg: err.message });
   }
 
-  return res.status(500).json({ msg: "Oops something went wrong", err: err });
+  return res.status(500).json({ msg: "Oops something went wrong", err: err.message });
 };
 
 module.exports = errorHandler;
