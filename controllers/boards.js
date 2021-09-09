@@ -30,6 +30,11 @@ const createBoard = asyncWrapper(async (req, res) => {
 const deleteBoard = asyncWrapper(async (req, res) => {
   const { id: boardID } = req.params;
 
+  const board = await Boards.findOneAndDelete({ _id: boardID });
+  if (!board) {
+    return res.status(404).json({ msg: `Cannot find task with id: ${boardID}` });
+  }
+
   res.status(200).json({ msg: "Board deleted successfully" });
 });
 

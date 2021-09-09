@@ -671,6 +671,63 @@
 			"name": "DELETE - /api/v1/boards/:id",
 			"item": [
 				{
+					"name": "Creates a board for deletion",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"boardName\", `Newly created board name to be deleted`);",
+									"pm.environment.set(\"boardDescription\", `Newly created board description to be delted`);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Board is created and ID is saved\", function () {",
+									"    const responseData = pm.response.json();",
+									"    pm.environment.set(\"boardID\", responseData.board._id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{boardName}}\",\n    \"description\": \"{{boardDescription}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "User can successfully delete a board",
 					"event": [
 						{
@@ -694,7 +751,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/v1/boards/61361b1a77be52e4f44832ff",
+							"raw": "{{url}}/api/v1/boards/{{boardID}}",
 							"host": [
 								"{{url}}"
 							],
@@ -702,7 +759,45 @@
 								"api",
 								"v1",
 								"boards",
-								"61361b1a77be52e4f44832ff"
+								"{{boardID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User cannot delete board that doesn't exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Success message is returned\", function () {",
+									"    const responseData = pm.response.json();",
+									"    pm.expect(responseData.msg).to.eql(\"Cannot find task with id: 613a5ba2ed6442624d494444\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/613a5ba2ed6442624d494444",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"613a5ba2ed6442624d494444"
 							]
 						}
 					},
