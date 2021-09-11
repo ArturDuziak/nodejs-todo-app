@@ -38,14 +38,35 @@ const deleteBoard = asyncWrapper(async (req, res) => {
   res.status(200).json({ msg: "Board deleted successfully" });
 });
 
+const editBoard = asyncWrapper(async (req, res) => {
+  const { id: boardID } = req.params;
+
+  const board = await Boards.findOneAndUpdate({ _id: boardID }, req.body, {
+    new: true,
+    runValidators: true,
+    overwrite: true,
+  });
+
+  if (!board) {
+    return res.status(404).json({ msg: `Cannot find task with id: ${boardID}` });
+  }
+
+  res.status(200).json({ board });
+});
+
 const updateBoard = asyncWrapper(async (req, res) => {
   const { id: boardID } = req.params;
 
-  res.status(200).json({
-    _id: boardID,
-    name: "Updated board",
-    description: "Description updated board",
+  const board = await Boards.findOneAndUpdate({ _id: boardID }, req.body, {
+    new: true,
+    runValidators: true,
   });
+
+  if (!board) {
+    return res.status(404).json({ msg: `Cannot find task with id: ${boardID}` });
+  }
+
+  res.status(200).json({ board });
 });
 
 const getBoardTasks = asyncWrapper(async (req, res) => {
@@ -70,4 +91,5 @@ module.exports = {
   deleteBoard,
   updateBoard,
   getBoardTasks,
+  editBoard,
 };

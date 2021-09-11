@@ -8,13 +8,15 @@ const {
   deleteBoard,
   updateBoard,
   getBoardTasks,
+  editBoard,
 } = require("../controllers/boards.js");
 
 router.get("/", getAllBoards);
 router.get("/:id", getSpecificBoard);
 router.post("/", createBoard);
 router.delete("/:id", deleteBoard);
-router.put("/:id", updateBoard);
+router.put("/:id", editBoard);
+router.patch("/:id", updateBoard);
 router.get("/:id/tasks", getBoardTasks);
 
 module.exports = router;

@@ -12,7 +12,7 @@ const BoardSchema = new mongoose.Schema({
     required: false,
     trim: true,
     maxlength: [100, "Board description cannot be longer than 150 characters"],
-    default: ""
+    default: "",
   },
 });
 
