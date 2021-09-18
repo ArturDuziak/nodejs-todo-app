@@ -6,6 +6,7 @@ const connectDB = require("./db/connect");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
 
+require('./models')
 app.use(express.json());
 
 // Routes

@@ -14,6 +14,12 @@ const BoardSchema = new mongoose.Schema({
     maxlength: [100, "Board description cannot be longer than 150 characters"],
     default: "",
   },
+  tasks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tasks",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Boards", BoardSchema);

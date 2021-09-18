@@ -12,7 +12,7 @@ const getAllBoards = asyncWrapper(async (req, res) => {
 
 const getSpecificBoard = asyncWrapper(async (req, res, next) => {
   const { id: boardID } = req.params;
-  const board = await Boards.findById(boardID);
+  const board = await Boards.findById(boardID).populate("tasks");
 
   if (!board) {
     return next(createCustomError(`Cannot find board with id: ${boardID}`, 404));
@@ -69,19 +69,36 @@ const updateBoard = asyncWrapper(async (req, res) => {
   res.status(200).json({ board });
 });
 
-const getBoardTasks = asyncWrapper(async (req, res) => {
+const getBoardTasks = asyncWrapper(async (req, res, next) => {
   const { id: boardID } = req.params;
 
-  res.status(200).json({
-    tasks: [
-      {
-        summary: "Summary of first task",
-        description: "Descritpion of first task",
-        status: "to_do",
-        priority: "high",
-      },
-    ],
-  });
+  const board = await Boards.findById(boardID).populate("tasks");
+
+  if (!board) {
+    return next(createCustomError(`Cannot find board with id: ${boardID}`, 404));
+  }
+
+  res.status(200).json(board.tasks);
+});
+
+const getSpecificBoardTask = asyncWrapper(async (req, res, next) => {
+  const { boardID, taskID } = req.params;
+
+  const board = await Boards.findById(boardID).populate("tasks");
+
+  if (!board) {
+    return next(createCustomError(`Cannot find board with id: ${boardID}`, 404));
+  }
+
+  const specificTask = board["tasks"].find((task) => task._id == taskID);
+
+  if (!specificTask) {
+    return next(
+      createCustomError(`Cannot find task with id: ${taskID} in board with id: ${boardID}`, 404)
+    );
+  }
+
+  res.status(200).json(specificTask);
 });
 
 module.exports = {
@@ -92,4 +109,5 @@ module.exports = {
   updateBoard,
   getBoardTasks,
   editBoard,
+  getSpecificBoardTask,
 };
