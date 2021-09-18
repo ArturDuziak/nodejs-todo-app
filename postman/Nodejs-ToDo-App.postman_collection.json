@@ -1803,6 +1803,260 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "DELETE - /api/v1/boards/:id/tasks/:id",
+			"item": [
+				{
+					"name": "Creates a board to test",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Saves boardID to update\", function () {",
+									"    const responseData = pm.response.json();",
+									"    pm.environment.set(\"boardID\", responseData.board._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Name of the board\",\n    \"description\": \"Description of the board\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a task in board to delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Checks if values from body are saved, checks default values of priorties that werent passed', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.environment.set(\"taskID\", responseData.tasks[0]._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const date = new Date();",
+									"const boardTimestamp = date.getTime();",
+									"",
+									"pm.environment.set(\"taskSummary\", `Task summary ${boardTimestamp}`);",
+									"pm.environment.set(\"taskDescription\", `Task description ${boardTimestamp}`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"summary\": \"{{taskSummary}}\",\n    \"description\": \"{{taskDescription}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User can successfully delete task from board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Checks message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.msg).to.eql(\"Task deleted successfully\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks/{{taskID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks",
+								"{{taskID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User cannot delete task that doesn't exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Checks message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.msg).to.eql(`Cannot find task with id: ${pm.environment.get(\"taskID\")}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks/{{taskID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks",
+								"{{taskID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cleans after test",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1820,9 +2074,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.test(\"Response time always is less than 300ms\", function () {",
-					"    pm.expect(pm.response.responseTime).to.be.below(700);",
-					"});"
+					""
 				]
 			}
 		}

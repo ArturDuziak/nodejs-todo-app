@@ -125,6 +125,17 @@ const createTaskInBoard = asyncWrapper(async (req, res, next) => {
   res.status(201).json(newBoard);
 });
 
+const deleteTaskInBoard = asyncWrapper(async (req, res, next) => {
+  const { taskID } = req.params;
+
+  const task = await Tasks.findOneAndDelete({ _id: taskID });
+  if (!task) {
+    return next(createCustomError(`Cannot find task with id: ${taskID}`, 404));
+  }
+
+  res.status(200).json({ msg: "Task deleted successfully" });
+});
+
 module.exports = {
   getAllBoards,
   getSpecificBoard,
@@ -135,4 +146,5 @@ module.exports = {
   editBoard,
   getSpecificBoardTask,
   createTaskInBoard,
+  deleteTaskInBoard,
 };
