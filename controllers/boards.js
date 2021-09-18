@@ -1,4 +1,5 @@
 const Boards = require("../models/boards");
+const Tasks = require("../models/tasks");
 const { createCustomError } = require("../errors/custom-error");
 const asyncWrapper = require("../middleware/asyncWrapper");
 
@@ -101,6 +102,29 @@ const getSpecificBoardTask = asyncWrapper(async (req, res, next) => {
   res.status(200).json(specificTask);
 });
 
+const createTaskInBoard = asyncWrapper(async (req, res, next) => {
+  const { boardID } = req.params;
+
+  const board = await Boards.findById(boardID);
+
+  if (!board) {
+    return next(createCustomError(`Cannot find board with id: ${boardID}`, 404));
+  }
+
+  const task = await Tasks.create(req.body);
+
+  const newBoard = await Boards.findOneAndUpdate(
+    { _id: boardID },
+    { $push: { tasks: task._id } },
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).populate("tasks");
+
+  res.status(201).json(newBoard);
+});
+
 module.exports = {
   getAllBoards,
   getSpecificBoard,
@@ -110,4 +134,5 @@ module.exports = {
   getBoardTasks,
   editBoard,
   getSpecificBoardTask,
+  createTaskInBoard,
 };

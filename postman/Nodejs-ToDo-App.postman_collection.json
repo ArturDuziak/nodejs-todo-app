@@ -1479,6 +1479,330 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "POST - /api/v1/boards/:id/tasks",
+			"item": [
+				{
+					"name": "Creates a board to test",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Saves boardID to update\", function () {",
+									"    const responseData = pm.response.json();",
+									"    pm.environment.set(\"boardID\", responseData.board._id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Name of the board\",\n    \"description\": \"Description of the board\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User can successfully add task to the board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Checks if values from body are saved, checks default values of priorties that werent passed', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.tasks[0].summary).to.equal(pm.environment.get(\"taskSummary\"));",
+									"    pm.expect(responseData.tasks[0].description).to.equal(pm.environment.get(\"taskDescription\"));",
+									"    pm.expect(responseData.tasks[0].status).to.equal('to_do');",
+									"    pm.expect(responseData.tasks[0].priority).to.equal('medium');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const date = new Date();",
+									"const boardTimestamp = date.getTime();",
+									"",
+									"pm.environment.set(\"taskSummary\", `Task summary ${boardTimestamp}`);",
+									"pm.environment.set(\"taskDescription\", `Task description ${boardTimestamp}`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"summary\": \"{{taskSummary}}\",\n    \"description\": \"{{taskDescription}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User can successfully add task to the board with priority and status set Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Checks if values from body are saved, checks default values of priorties that werent passed', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.tasks[1].summary).to.equal(pm.environment.get(\"taskSummary\"));",
+									"    pm.expect(responseData.tasks[1].description).to.equal(pm.environment.get(\"taskDescription\"));",
+									"    pm.expect(responseData.tasks[1].status).to.equal('done');",
+									"    pm.expect(responseData.tasks[1].priority).to.equal('high');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const date = new Date();",
+									"const boardTimestamp = date.getTime();",
+									"",
+									"pm.environment.set(\"taskSummary\", `Task summary ${boardTimestamp}`);",
+									"pm.environment.set(\"taskDescription\", `Task description ${boardTimestamp}`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"summary\": \"{{taskSummary}}\",\n    \"description\": \"{{taskDescription}}\",\n    \"priority\": \"high\",\n    \"status\": \"done\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User cannot add task to the board with longer summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"",
+									"pm.test('Checks if values from body are saved, checks default values of priorties that werent passed', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.err).to.equal(\"Tasks validation failed: summary: Task summary cannot be longer than 50 characters\");",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"taskSummary\", `Task summary is getting really long and long and long and long and long`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"summary\": \"{{taskSummary}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User cannot add task to the board with longer description",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"",
+									"pm.test('Checks if values from body are saved, checks default values of priorties that werent passed', function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.err).to.equal(\"Tasks validation failed: description: Task description cannot be longer than 400 characters\");",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"summary\": \"Test description length\",\n    \"description\": \"A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long description A very long\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cleans after test",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1/boards/{{boardID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"boards",
+								"{{boardID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1497,7 +1821,7 @@
 				"type": "text/javascript",
 				"exec": [
 					"pm.test(\"Response time always is less than 300ms\", function () {",
-					"    pm.expect(pm.response.responseTime).to.be.below(500);",
+					"    pm.expect(pm.response.responseTime).to.be.below(700);",
 					"});"
 				]
 			}
