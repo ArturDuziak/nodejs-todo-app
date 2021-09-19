@@ -12,7 +12,7 @@ jobs:
       - run: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
 
   postman-tests:
-    executor: newman/postman-newman-docker
+    executor: node/default
     steps:
       - checkout
       - node/install-packages
