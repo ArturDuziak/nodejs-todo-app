@@ -1,0 +1,33 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.7.0
+  newman: postman/newman@0.0.2
+
+jobs:
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
+
+  postman-tests:
+    executor: newman/postman-newman-docker
+    steps:
+      - checkout
+      - run:
+          name: Run the application
+          command: npm run start
+          background: true
+      - run: npx wait-on http://localhost:3000 && echo "Local server ready!"
+      - newman/newman-run:
+          collection: ./postman/Users.postman_collection.json
+          environment: ./postman/My-Remote-API-Testing.postman_environment.json
+
+workflows:
+  validate_branch:
+    jobs:
+      - build
+      - postman-tests:
+          requires:
+            - build
