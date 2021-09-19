@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "newman:test:local": "newman run postman/Nodejs-ToDo-App.postman_collection.json --environment postman/Nodejs-ToDo-App.postman_environment.json"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "mongoose": "^6.0.4"
   },
   "devDependencies": {
+    "newman": "^5.3.0",
     "nodemon": "^2.0.12",
     "wait-on": "^6.0.0"
   }

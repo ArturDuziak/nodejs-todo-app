@@ -21,9 +21,7 @@ jobs:
           command: npm run start
           background: true
       - run: npx wait-on http://localhost:3000 && echo "Local server ready!"
-      - newman/newman-run:
-          collection: ./postman/Users.postman_collection.json
-          environment: ./postman/My-Remote-API-Testing.postman_environment.json
+      - run: npm rum newman:test:local
 
 workflows:
   validate_branch:
