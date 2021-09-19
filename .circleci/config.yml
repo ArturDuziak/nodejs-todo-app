@@ -9,18 +9,14 @@ jobs:
     steps:
       - checkout
       - node/install-packages
-      - run: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - .env
 
   postman-tests:
     executor: node/default
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
+      - run:
+          name: Set environment variables to run app
+          command: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
       - node/install-packages
       - run:
           name: Run the application
