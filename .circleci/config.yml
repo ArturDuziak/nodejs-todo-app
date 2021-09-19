@@ -10,17 +10,23 @@ jobs:
       - checkout
       - node/install-packages
       - run: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - .env
 
   postman-tests:
     executor: node/default
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - node/install-packages
       - run:
           name: Run the application
           command: npm run start
           background: true
-      - run: npx wait-on http://localhost:3000 && echo "Local server ready!"
+      - run: npx wait-on http://localhost:3000/api/v1/boards && echo "Local server ready!"
       - run: npm rum newman:test:local
 
 workflows:
