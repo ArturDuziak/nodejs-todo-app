@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: Set environment variables to run app
-          command: echo "MONGO_URI=mongodb+srv://Artur:1820144@nodeexpressprojects.og1ay.mongodb.net/NODEJS_TODO_APP?retryWrites=true&w=majority" >> .env
+          command: echo "MONGO_URI=${EXPRESS_MONGO_URI}" >> .env
       - node/install-packages
       - run:
           name: Run the application
