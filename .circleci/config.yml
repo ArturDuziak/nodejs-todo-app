@@ -1,0 +1,34 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.7.0
+  newman: postman/newman@0.0.2
+
+jobs:
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+
+  postman-tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Set environment variables to run app
+          command: echo "MONGO_URI=${EXPRESS_MONGO_URI}" >> .env
+      - node/install-packages
+      - run:
+          name: Run the application
+          command: npm run start
+          background: true
+      - run: npx wait-on http://localhost:3000/api/v1/boards && echo "Local server ready!"
+      - run: npm rum newman:test:local
+
+workflows:
+  validate_branch:
+    jobs:
+      - build
+      - postman-tests:
+          requires:
+            - build
